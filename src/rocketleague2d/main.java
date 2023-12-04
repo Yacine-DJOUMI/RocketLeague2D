@@ -1,41 +1,90 @@
 package rocketleague2d;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Game;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 public class main extends BasicGame {
 
-	public main(String gamename) {
-		super(gamename);
-	}
+    private texture backgroundTexture;
+    private texture kartTexture;
 
-	@Override
-	public void init(GameContainer gc) throws SlickException {
-	}
+    private float kartX;
+    private float kartY;
 
-	@Override
-	public void update(GameContainer gc, int i) throws SlickException {
-	}
+    public main(String name) {
+        super(name);
+    }
 
-	@Override
-	public void render(GameContainer gc, Graphics g) throws SlickException {
-		g.drawString("Howdy!", 10, 10);
-	}
+    
+    
+    public void initTexture() throws SlickException {
+        backgroundTexture = new texture("background.png");
+        kartTexture = new texture("kart.png");
+    }
 
-	public static void main(String[] args) {
-		try {
-			AppGameContainer appgc;
-			appgc = new AppGameContainer(new main("Simple Slick Game"));
-			appgc.setDisplayMode(640, 480, false);
-			appgc.start();
-		} catch (SlickException ex) {
-			Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		
-	}
+    @Override
+    public void init(GameContainer gc) throws SlickException {
+        initTexture();
+
+        kartX = gc.getWidth() / 2 - kartTexture.getImage().getWidth() / 2;
+        kartY = gc.getHeight() - kartTexture.getImage().getHeight();
+    }
+    
+    
+    
+    @Override
+    public void update(GameContainer gc, int delta) throws SlickException {
+
+        Input input = gc.getInput();
+        
+        if (input.isKeyDown(Input.KEY_ESCAPE)){
+            System.exit(0);
+        }
+        if (input.isKeyDown(Input.KEY_LEFT)) {
+            kartX -= 0.2 * delta;
+        }
+        if (input.isKeyDown(Input.KEY_RIGHT)) {
+            kartX += 0.2 * delta;
+        }
+        if (input.isKeyDown(Input.KEY_UP)) {
+            kartY -= 0.2 * delta;
+        }
+        if (input.isKeyDown(Input.KEY_DOWN)) {
+            kartY += 0.2 * delta;
+        }
+
+        // Ensure the kart stays within the screen bounds
+        kartX = Math.max(0, Math.min(gc.getWidth() - kartTexture.getImage().getWidth(), kartX));
+    }
+
+    
+    
+    @Override
+    public void render(GameContainer gc, Graphics g) throws SlickException {
+        // Draw the background
+        backgroundTexture.getImage().draw(0, 0, gc.getWidth(), gc.getHeight());
+
+        // Draw the kart
+        kartTexture.getImage().draw(kartX, kartY, 64, 64);
+
+        // Draw other game elements on top of the background and kart
+        g.drawString("RocketLeague 2D", 1920-150, 10);
+    }
+
+    
+    
+    public static void main(String[] args) throws SlickException {
+        Game _Game = new main("RocketLeague 2D");
+        AppGameContainer _AppGameContainer = new AppGameContainer(_Game);
+        _AppGameContainer.setDisplayMode(1920, 1080, true);
+        _AppGameContainer.start();
+    }
+
+    
+    
 }
