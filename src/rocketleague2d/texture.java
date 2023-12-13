@@ -7,18 +7,14 @@ public class texture {
 
     private Image image;
 
-    public texture(String imagePath) throws SlickException {
-        loadImage(imagePath);
+    public texture(String path, int width, int height) throws SlickException {
+        this.image = new Image(path);
+        this.image = this.image.getScaledCopy(width, height);
     }
 
-    private void loadImage(String imagePath) throws SlickException {
-        try {
-            image = new Image(imagePath);
-        } catch (SlickException e) {
-            throw new SlickException("Error loading image: " + imagePath);
-        }
+    public texture(String path) throws SlickException {
+        this.image = new Image(path);
     }
-
     public Image getImage() {
         return image;
     }
