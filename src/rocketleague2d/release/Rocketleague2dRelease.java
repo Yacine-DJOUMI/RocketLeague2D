@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.newdawn.slick.AppGameContainer;
@@ -16,6 +17,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
 import rocketleague2d.release.GameObject.Ball;
@@ -27,12 +29,24 @@ public class Rocketleague2dRelease extends BasicGame{
     public static Terrain terrain;
     
     private TrueTypeFont trueTypeFont;
+    private TrueTypeFont trueTypeFontBig;
+    
+ 
+    private Sound goal_impact;
+    private Sound goal_horn;
+    private Sound game_over;
+    private Sound trente_seconde;
+    private Sound ready_set_go;
+    private Sound timer_running_out;
+    private Sound fond_sonore;
+    
+    private static boolean game_over_ = false;
     
     public static Ball ball;
     
     static int FPS = 50;
-    int FPStoSegond = 0;
-    int Segond = 0;
+    int FPStoSeconde = 0;
+    int Seconde = 0;
     int Minute = 2;
     
     public boolean TimeOut = false;
@@ -59,13 +73,23 @@ public class Rocketleague2dRelease extends BasicGame{
 
     @Override
     public void init(GameContainer gc) throws SlickException {
-        terrain = new Terrain("background.png", 0, 0, gc.getWidth(), gc.getHeight());
-    
+        int random = new Random().nextInt(5) + 1;
+ 
+            terrain = new Terrain("background" + random + ".png", 0, 0, gc.getWidth(), gc.getHeight());            
+
         ball = new Ball("RLball.png", gc, 128);
     
-        equipe_blue = new Equipe("blue", 50, 50, 104, 64, 0, gc.getHeight()/2);
-        equipe_orange = new Equipe("orange", 50, 50, 104, 64, gc.getWidth(),gc.getHeight()/2);
-        
+        equipe_blue = new Equipe("blue", gc.getWidth()/6.2f, gc.getHeight()/2, 104, 64, 0, gc.getHeight()/2,0);
+        equipe_orange = new Equipe("orange", gc.getWidth()*0.837f, gc.getHeight()/2, 104, 64, gc.getWidth(),gc.getHeight()/2,180);
+
+           goal_impact = new Sound("audio/goal_impact.wav");
+           goal_horn = new Sound("audio/goal_horn.wav");
+           game_over = new Sound("audio/game_over.wav");
+           trente_seconde = new Sound("audio/trente_seconde.wav");
+           ready_set_go = new Sound("audio/ready_set_go.wav");
+           timer_running_out = new Sound("audio/timer_running_out.wav");
+           fond_sonore = new Sound("audio/fond_sonore.wav");
+         
         // CLASS FONT
         try {
             // Replace "path/to/your/font.ttf" with the actual path to your TTF file
@@ -80,12 +104,15 @@ public class Rocketleague2dRelease extends BasicGame{
             // Set the font size and create the TrueTypeFont
             awtFont = awtFont.deriveFont(32f); // Adjust the font size as needed
             trueTypeFont = new TrueTypeFont(awtFont, false);
+            awtFont = awtFont.deriveFont(64f); // Adjust the font size as needed
+            trueTypeFontBig = new TrueTypeFont(awtFont, false);
         } catch (FileNotFoundException e) {
         } catch (FontFormatException ex) {
         } catch (IOException ex) {
         }
         // CLASS FONT
-        
+        ready_set_go.play();
+        fond_sonore.play();
     }
 
     @Override
@@ -97,6 +124,7 @@ public class Rocketleague2dRelease extends BasicGame{
             System.exit(0);
         }
         
+                if(TimeOut == false){
         
         // Gestion des touches pour le kart de l'équipe 1
         if(input.isKeyDown(Input.KEY_LEFT)){
@@ -130,22 +158,27 @@ public class Rocketleague2dRelease extends BasicGame{
         ball.update(equipe_blue.kart.position_x, equipe_blue.kart.position_y, equipe_blue.kart.velocity_x, equipe_blue.kart.velocity_y);
 
         
-        if(input.isKeyDown(Input.KEY_R)){
-            ball.Reset();
-        }
-        
-        
         ball.collision(gc.getWidth(), gc.getHeight());
         
         if(equipe_orange.cage.Collision(ball.position_x, ball.position_y)){
-            equipe_orange.score++;
+            equipe_blue.score++;
+            goal_impact.play();
+           goal_horn.play();
             ball.Reset();
-            
+                       equipe_blue.kart.Reset();
+                                  equipe_orange.kart.Reset();
         }
         if(equipe_blue.cage.Collision(ball.position_x, ball.position_y)){
-            equipe_blue.score++;
-            ball.Reset();
+            equipe_orange.score++;
+           goal_impact.play();
+           goal_horn.play();
+           ball.Reset();
+           equipe_blue.kart.Reset();
+                      equipe_orange.kart.Reset();
         }
+                   
+        }
+                
 
     }
 
@@ -159,31 +192,54 @@ public class Rocketleague2dRelease extends BasicGame{
          trueTypeFont.drawString((gc.getWidth()/2) - 180, 10, " Bleu :  " + equipe_blue.score + "            Orange : " + equipe_orange.score);
                   
          // CLASS TIME BY DRAW
-         if(FPStoSegond == FPS){
-             FPStoSegond = 0;
-             if(Segond != 0){
-               Segond -= 1;
+         if(FPStoSeconde == FPS){
+             FPStoSeconde = 0;
+             if(Seconde != 0){
+               Seconde -= 1;
              }
              else{
                 if(Minute != 0){
-                  Segond = 59;
+                  Seconde = 59;
                   Minute -= 1;
                 }
                 else{
-                  TimeOut = true;                
+                  if(FPStoSeconde == 0&& TimeOut == false){
+                      game_over.play();       
+                  }
+                  TimeOut = true;
                 }
              }
          }
          else{
-             FPStoSegond += 1;
+             FPStoSeconde += 1;
          }
          // CLASS TIME BY DRAW
 
-         if(Segond <= 9){
-           trueTypeFont.drawString((gc.getWidth()/2) - 35, 10, "0" + Minute + ":" + "0" + Segond);             
+         if(Seconde <= 9){
+           trueTypeFont.drawString((gc.getWidth()/2) - 35, 10, "0" + Minute + ":" + "0" + Seconde);             
          }
          else{
-           trueTypeFont.drawString((gc.getWidth()/2) - 35, 10, "0" + Minute + ":" + Segond);                          
+           trueTypeFont.drawString((gc.getWidth()/2) - 35, 10, "0" + Minute + ":" + Seconde);                          
+         }
+         
+         if(Minute == 0 && Seconde == 30 && FPStoSeconde == 0){
+             trente_seconde.play();
+         }
+         if(Minute == 0 && Seconde <= 5 && Seconde != 0 && FPStoSeconde == 0){
+             timer_running_out.play();
+         }
+         
+         
+         if(TimeOut == true){
+         
+         if(equipe_orange.score > equipe_blue.score){
+                     trueTypeFontBig.drawString(gc.getWidth()/2-290, gc.getHeight()/4, " VICTOIRE ORANGE ");
+         }else if(equipe_orange.score == equipe_blue.score){
+                     trueTypeFontBig.drawString(gc.getWidth()/2-240, gc.getHeight()/4, " MATCH NUL ");
+         }else{
+                     trueTypeFontBig.drawString(gc.getWidth()/2-290, gc.getHeight()/4, " VICTOIRE BLEU ");
+         }
+         
          }
          
          

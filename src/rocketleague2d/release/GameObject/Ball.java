@@ -2,9 +2,13 @@ package rocketleague2d.release.GameObject;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import rocketleague2d.release.Object.ObjectMouvable;
 
 public class Ball extends ObjectMouvable {
+    
+    
+    private Sound ball_hit;
     
     private float init_position_x = 0;
     private float init_position_y = 0;
@@ -15,6 +19,8 @@ public class Ball extends ObjectMouvable {
         super(textureName, gc.getWidth()/2, gc.getHeight()/2, size, size);
         init_position_x = position_x;
         init_position_y = position_y;
+        
+        ball_hit = new Sound("audio/ball_hit.wav");
     }
     
     public void Draw(){
@@ -35,6 +41,9 @@ public class Ball extends ObjectMouvable {
       } else if(collision_direction == 2){
         velocity_y = -velocity_y;
       }
+      if(collision_direction != 0){
+          ball_hit.play();
+      }
     }
 
     public void update(float kartX, float kartY, float kartSpeedX, float kartSpeedY){
@@ -43,10 +52,9 @@ public class Ball extends ObjectMouvable {
 
       
       if(isCollision(kartX, kartY, position_x, position_y, kartRadius, ballRadius)){
-        
+        ball_hit.play();
         System.out.println("Collision detected!");
 
-        
         float expulsionForce = 5.0f;
       
         float directionX = position_x - kartX;

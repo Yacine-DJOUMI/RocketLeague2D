@@ -11,6 +11,10 @@ public class Kart extends ObjectMouvable {
 
     private float velocity_max = 250.0f;
     
+        private float init_position_x = 0;
+    private float init_position_y = 0;
+    private float init_rotation = 0;
+    
     private float incress_speed = 0;
     private float incress_speed_max = 10.0f;
     private float incress_speed_acceleration = 0.1f;
@@ -18,8 +22,20 @@ public class Kart extends ObjectMouvable {
     
     private boolean isStop = true;
     
-    public Kart(String textureName, float positionX, float positionY, int sizeX, int sizeY) throws SlickException {
+    public Kart(String textureName, float positionX, float positionY, int sizeX, int sizeY,float rotation) throws SlickException {
         super(textureName, positionX, positionY, sizeX, sizeY);
+        this.rotation = rotation;
+        this.init_position_x = position_x;
+        this.init_position_y = position_y;
+        this.init_rotation = rotation;
+    }
+    
+    public void Reset(){
+        position_x = init_position_x;
+        position_y = init_position_y;
+        velocity_x = 0;
+        velocity_y = 0;
+        rotation = init_rotation;
     }
     
     public void Draw() {
