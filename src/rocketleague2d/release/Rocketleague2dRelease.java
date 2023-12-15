@@ -1,23 +1,41 @@
 package rocketleague2d.release;
 
+import java.awt.FontFormatException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Font;
 import org.newdawn.slick.Game;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.font.effects.ColorEffect;
 import rocketleague2d.release.GameObject.Ball;
-import rocketleague2d.release.GameObject.Boost;
 import rocketleague2d.release.GameObject.Terrain;
 import rocketleague2d.release.GameObject.Equipe;
 
 public class Rocketleague2dRelease extends BasicGame{
 
     public static Terrain terrain;
-    public static Boost boost;
+    
+    private TrueTypeFont trueTypeFont;
     
     public static Ball ball;
+    
+    static int FPS = 50;
+    int FPStoSegond = 0;
+    int Segond = 0;
+    int Minute = 2;
+    
+    public boolean TimeOut = false;
     
     public static Equipe equipe_blue;
     public static Equipe equipe_orange;
@@ -29,7 +47,7 @@ public class Rocketleague2dRelease extends BasicGame{
         // Crée une fenêtre de jeu
         AppGameContainer appGameContainer = new AppGameContainer(game);
         appGameContainer.setDisplayMode(1920, 1080, true);
-        appGameContainer.setTargetFrameRate(50);
+        appGameContainer.setTargetFrameRate(FPS);
 
         // Lance le jeu
         appGameContainer.start();
@@ -42,12 +60,32 @@ public class Rocketleague2dRelease extends BasicGame{
     @Override
     public void init(GameContainer gc) throws SlickException {
         terrain = new Terrain("background.png", 0, 0, gc.getWidth(), gc.getHeight());
-        boost = new Boost("background.png", 200, 200, 64, 64);
     
         ball = new Ball("RLball.png", gc, 128);
     
-        equipe_blue = new Equipe("blue", 50, 50, 104, 64);
-        equipe_orange = new Equipe("orange", 50, 50, 104, 64);
+        equipe_blue = new Equipe("blue", 50, 50, 104, 64, 0, gc.getHeight()/2);
+        equipe_orange = new Equipe("orange", 50, 50, 104, 64, gc.getWidth(),gc.getHeight()/2);
+        
+        // CLASS FONT
+        try {
+            // Replace "path/to/your/font.ttf" with the actual path to your TTF file
+            String fontPath = "font/Planer-Regular-webfont.ttf";
+
+            // Load the TTF file using FileInputStream
+            InputStream inputStream = new FileInputStream(new File(fontPath));
+
+            // Create a font object
+            java.awt.Font awtFont = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, inputStream);
+
+            // Set the font size and create the TrueTypeFont
+            awtFont = awtFont.deriveFont(32f); // Adjust the font size as needed
+            trueTypeFont = new TrueTypeFont(awtFont, false);
+        } catch (FileNotFoundException e) {
+        } catch (FontFormatException ex) {
+        } catch (IOException ex) {
+        }
+        // CLASS FONT
+        
     }
 
     @Override
@@ -58,7 +96,7 @@ public class Rocketleague2dRelease extends BasicGame{
         if (input.isKeyDown(Input.KEY_ESCAPE)) {
             System.exit(0);
         }
-
+        
         
         // Gestion des touches pour le kart de l'équipe 1
         if(input.isKeyDown(Input.KEY_LEFT)){
@@ -98,6 +136,16 @@ public class Rocketleague2dRelease extends BasicGame{
         
         
         ball.collision(gc.getWidth(), gc.getHeight());
+        
+        if(equipe_orange.cage.Collision(ball.position_x, ball.position_y)){
+            equipe_orange.score++;
+            ball.Reset();
+            
+        }
+        if(equipe_blue.cage.Collision(ball.position_x, ball.position_y)){
+            equipe_blue.score++;
+            ball.Reset();
+        }
 
     }
 
@@ -107,6 +155,38 @@ public class Rocketleague2dRelease extends BasicGame{
         ball.Draw();
         equipe_blue.kart.Draw();
         equipe_orange.kart.Draw();
+        
+         trueTypeFont.drawString((gc.getWidth()/2) - 180, 10, " Bleu :  " + equipe_blue.score + "            Orange : " + equipe_orange.score);
+                  
+         // CLASS TIME BY DRAW
+         if(FPStoSegond == FPS){
+             FPStoSegond = 0;
+             if(Segond != 0){
+               Segond -= 1;
+             }
+             else{
+                if(Minute != 0){
+                  Segond = 59;
+                  Minute -= 1;
+                }
+                else{
+                  TimeOut = true;                
+                }
+             }
+         }
+         else{
+             FPStoSegond += 1;
+         }
+         // CLASS TIME BY DRAW
+
+         if(Segond <= 9){
+           trueTypeFont.drawString((gc.getWidth()/2) - 35, 10, "0" + Minute + ":" + "0" + Segond);             
+         }
+         else{
+           trueTypeFont.drawString((gc.getWidth()/2) - 35, 10, "0" + Minute + ":" + Segond);                          
+         }
+         
+         
     }
     
 }

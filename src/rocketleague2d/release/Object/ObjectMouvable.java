@@ -23,23 +23,23 @@ public class ObjectMouvable {
         this.size_y = sizeY;
     }
     
-    public boolean TerrainCollision(float terrain_size_x, float terrain_size_y, float troubleshot){
-        boolean collision = false;
+    public int TerrainCollision(float terrain_size_x, float terrain_size_y, float troubleshot){
+        int collision = 0;
         if(position_x + size_x > terrain_size_x){
             position_x = terrain_size_x - size_x;
-            collision = true;
+            collision = 1;
         }
         if(position_y + (size_y*troubleshot) > terrain_size_y){
             position_y = terrain_size_y - (size_y*troubleshot);
-            collision = true;
+            collision = 2;
         }
         if(position_x - size_x < 0){
             position_x = size_x;
-            collision = true;
+            collision = 1;
         }
         if(position_y - (size_y*troubleshot) < 0){
             position_y = (size_y*troubleshot);
-            collision = true;
+            collision = 2;
         }
         return collision;
     }
