@@ -4,6 +4,13 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/202130321/Documents/Project/RocketLeague2D/RocketLeague2D/src/rocketleague2d/release/Rocketleague2dRelease.java</file>
+            <file>file:/C:/Users/202130321/Documents/Project/RocketLeague2D/RocketLeague2D/src/rocketleague2d/release/GameObject/Ball.java</file>
+            <file>file:/C:/Users/202130321/Documents/Project/RocketLeague2D/RocketLeague2D/src/rocketleague2d/release/GameObject/Cage.java</file>
+            <file>file:/C:/Users/202130321/Documents/Project/RocketLeague2D/RocketLeague2D/src/rocketleague2d/release/GameObject/Terrain.java</file>
+            <file>file:/C:/Users/202130321/Documents/Project/RocketLeague2D/RocketLeague2D/src/rocketleague2d/release/GameObject/Kart.java</file>
+            <file>file:/C:/Users/202130321/Documents/Project/RocketLeague2D/RocketLeague2D/src/rocketleague2d/release/GameObject/Equipe.java</file>
+            <file>file:/C:/Users/202130321/Documents/Project/RocketLeague2D/RocketLeague2D/src/rocketleague2d/release/Object/ObjectMouvable.java</file>
+            <file>file:/C:/Users/202130321/Documents/Project/RocketLeague2D/RocketLeague2D/src/rocketleague2d/release/Object/Texture.java</file>
         </group>
     </open-files>
 </project-private>
